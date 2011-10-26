@@ -6,13 +6,15 @@ description: Accessible version of a Google style autocompleter for MooTools tha
 copyright: Copyright (c) Juan Lago D.
 authors: [Juan Lago <juanparati[at]gmail[dot]com>, Alex Duschek]
 
-requires: 
-  core:1.4.0: 
-  - Element.Event
-  - Element.Event.Delegation
-  - Request.JSON
+requires:
+
+- core:1.4.0: Element.Event
+- core:1.4.0: Element.Event.Delegation
+- core:1.4.0:  Request.JSON
+
 provides: [GooCompleter]
-A method create autocomplete fields!
+
+...
 */
 window.addEvent('domready', function(){
 
