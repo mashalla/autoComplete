@@ -13,6 +13,9 @@ core:1.4.0:
 - Request.JSON
 provides: [GooCompleter]
 A method create autocomplete fields!
+
+...
+
 */
 
 // MooCompleter class
