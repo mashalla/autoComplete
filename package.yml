@@ -1,0 +1,7 @@
+name: Accessible Autocomplete
+author: mashalla
+category: Widgets
+tags: [Widget, UI, autocompletion, autocomplete, WAI ARIA]
+# docs: https://github.com/juanparati/GooCompleter 
+demo: http://mashalla.github.com/autocomplete
+current: 1.0
