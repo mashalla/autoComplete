@@ -1,20 +1,18 @@
 /*
 ---
-script: Accessible Autocomplete
+script: goocompleter.js
 license: GNU/GPL license.
-description: Accessible version of a Google style autocompleter for MooTools that use AJAX request.
+description: Google style autocompleter for MooTools that use AJAX request.
 copyright: Copyright (c) Juan Lago D.
-authors: [Juan Lago <juanparati[at]gmail[dot]com>, Alex Duschek]
+authors: [Juan Lago <juanparati[at]gmail[dot]com>]
 
 requires:
-
-- core:1.4.0: Element.Event
-- core:1.4.0: Element.Event.Delegation
-- core:1.4.0:  Request.JSON
-
+core:1.4.0:
+- Element.Event
+- Element.Event.Delegation
+- Request.JSON
 provides: [GooCompleter]
-
-...
+A method create autocomplete fields!
 */
 
 // MooCompleter class
@@ -32,7 +30,7 @@ var GooCompleter = new Class({
 		use_typebox : true,
 		clone_typebox : true,
 		typebox_offset : {
-			x : 2,
+			x : 0,
 			y : 0
 		},
 
@@ -50,18 +48,11 @@ var GooCompleter = new Class({
 	blocked : false,
 	suggestions : new Array(),
 
-	// AD
-	// contains all available suggestions
-	allSuggestions : new Array(),
-
-	// saves a value entered by the user
-	cachedInput : '',
-	// end AD
-
 	/*
-	 * Constructor: initialize Constructor
-	 *
-	 * Add event on formular and perform some stuff, you now, like settings, ...
+	 Constructor: initialize
+	 Constructor
+
+	 Add event on formular and perform some stuff, you now, like settings, ...
 	 */
 
 	initialize : function(field, options) {
@@ -76,12 +67,6 @@ var GooCompleter = new Class({
 		// Disable auto correct and capitalize on IOS.
 		this.field.setAttribute('autocapitalize', 'off');
 		this.field.setAttribute('autocorrect', 'off');
-
-		// AD
-		// WAI ARIA roles and properties
-		this.field.setAttribute('role', 'input');
-		this.field.setAttribute('aria-autocomplete', 'true');
-		// end AD
 
 		// Setup Typebox
 		if(this.options.use_typebox) {
@@ -99,8 +84,8 @@ var GooCompleter = new Class({
 
 				// Prevent IE 9 padding positioning bug
 				/*
-				 * if (!Browser.ie9)
-				 * this.typebox.setStyles(this.field.getStyles('padding-top'));
+				 if (!Browser.ie9)
+				 this.typebox.setStyles(this.field.getStyles('padding-top'));
 				 */
 
 				this.setRelPosition(this.field, this.typebox, this.options.typebox_offset.x, this.options.typebox_offset.y, true);
@@ -109,16 +94,6 @@ var GooCompleter = new Class({
 					this.setRelPosition(this.field, this.typebox, this.options.typebox_offset.x, this.options.typebox_offset.y, true);
 				}.bind(this));
 
-				this.field.addEvent('focus', function() {
-					this.setRelPosition(this.field, this.typebox, this.options.typebox_offset.x, this.options.typebox_offset.y, true);
-				}.bind(this));
-				this.field.addEvent('blur', function() {
-					if(this.options.use_typebox)
-						this.typebox.empty();
-
-					this.listbox.setStyle('display', 'none');
-
-				}.bind(this));
 			}
 
 			// Prevent focus lost
@@ -145,10 +120,6 @@ var GooCompleter = new Class({
 				this.setRelPosition(this.field, this.listbox, this.options.listbox_offset.x, this.options.listbox_offset.y, false);
 			}.bind(this));
 
-			this.field.addEvent('focus', function() {
-				this.setRelPosition(this.field, this.listbox, this.options.listbox_offset.x, this.options.listbox_offset.y, false);
-			}.bind(this));
-
 			// Add propagated event for list selection
 			this.listbox.addEvent('click:relay(li)', function(event, target) {
 
@@ -160,8 +131,6 @@ var GooCompleter = new Class({
 					this.typebox.empty();
 
 				this.listbox.setStyle('display', 'none');
-
-				this.field.focus();
 
 			}.bind(this));
 
@@ -176,11 +145,7 @@ var GooCompleter = new Class({
 			// Navigate between listbox
 			this.field.addEvent('keydown', function(event) {
 
-				// AD
-
-				// modified key events to match WAI ARIA standards
-				if(event.key == 'up' || event.key == 'down' || (event.key == "up" && event.altKey) || (event.key == "down" && event.altKey)) {
-
+				if(event.key == 'up' || event.key == 'down') {
 					if(this.listbox.getStyle('display') != 'none') {
 						var selected = this.navigate(event.key);
 
@@ -189,67 +154,13 @@ var GooCompleter = new Class({
 
 						this.field.set('value', selected.get('html'));
 					}
-					// AD
-					else {
-						// show all suggestions or the filtered ones
-						if(this.field.get('value') == '') {
-							this.showSuggestions(this.allSuggestions);
-						} else {
-							this.getSuggestions();
-						}
-					}
-					// end AD
 
 					event.stop();
 
 				}
-
-				// AD
-				// apply value on pressing enter
-				if(event.key == "enter") {
-
-					var targets = this.listbox.getElements("li");
-					var target = null;
-
-					targets.each(function(item, index) {
-						if(item.hasClass("selected")) {
-							target = item;
-						}
-					});
-					event.stop();
-
-					this.field.set('value', target.get('html'));
-
-					if(this.options.use_typebox)
-						this.typebox.empty();
-
-					this.listbox.setStyle('display', 'none');
-
-				}
-
-				// hide suggestions or revert the auto-completed entry
-				if(event.key == "esc") {
-
-					// needed for IE 6-8
-					event.stop();
-
-					if(this.listbox.getStyle('display') == 'block') {
-						if(this.cachedInput != '') {
-
-							// revert the user input
-							this.field.set('value', this.cachedInput);
-							this.removeSelection();
-						} else {
-
-							// no user input, so hide suggestion list
-							this.hideSuggestions();
-							this.writeTypebox(null);
-						}
-					}
-				}
-				// end AD
 
 			}.bind(this));
+
 		}
 
 		// Retrieve suggestions on keyup
@@ -258,13 +169,8 @@ var GooCompleter = new Class({
 			var value = this.field.get('value');
 
 			// Ignore some key events
-			if(event.key == 'up' || event.key == 'down' || event.key == 'left' || event.key == 'right' || event.key == 'tab' || event.key == 'esc' || event.key == 'enter')
+			if(event.key == 'up' || event.key == 'down' || event.key == 'left' || event.key == 'right' || event.key == 'tab')
 				return false;
-
-			// AD
-			// save user input for reverting
-			this.cachedInput = value;
-			// end AD
 
 			// Optimize response of typebox
 			if(this.options.use_typebox && this.suggestions.length > 0) {
@@ -299,21 +205,15 @@ var GooCompleter = new Class({
 
 	},
 	/*
-	 * Function hideSuggestions Private method
-	 *
-	 * Hides the suggestion list
-	 */
-	hideSuggestions : function() {
-		this.listbox.setStyle('display', 'none');
-	},
-	/*
-	 * Function: getSuggestions Private method
-	 *
-	 * Retrieve a list of suggestions
+	 Function: getSuggestions
+	 Private method
+
+	 Retrieve a list of suggestions
 	 */
 	getSuggestions : function() {
 
 		if(this.field.get('value').trim() != '') {
+
 			// AD
 			// filter all suggestions for the matching suggestions
 			this.suggestions = new Array();
@@ -349,9 +249,10 @@ var GooCompleter = new Class({
 
 	},
 	/*
-	 * Function: showSuggestions Private method
-	 *
-	 * Show a list of suggestions
+	 Function: showSuggestions
+	 Private method
+
+	 Show a list of suggestions
 	 */
 	showSuggestions : function(suggestions) {
 
@@ -397,27 +298,25 @@ var GooCompleter = new Class({
 
 	},
 	/*
-	 * Function: writeTypebox Private method
-	 *
-	 * Write a suggestion in the typebox
+	 Function: writeTypebox
+	 Private method
+
+	 Write a suggestion in the typebox
 	 */
 	writeTypebox : function(suggestion) {
 
-		if(suggestion != null) {
-			var replacement;
-			replacement = suggestion.substr(this.field.get('value').length);
-			replacement = '<span class="goocompleter_suggestion">' + replacement + '</span>';
+		var replacement;
+		replacement = suggestion.substr(this.field.get('value').length);
+		replacement = '<span class="goocompleter_suggestion">' + replacement + '</span>';
 
-			this.typebox.set('html', this.field.get('value') + replacement);
-		} else {
+		this.typebox.set('html', this.field.get('value') + replacement);
 
-			this.typebox.empty();
-		}
 	},
 	/*
-	 * Function: searchCache Private method
-	 *
-	 * Search a suggestion in cache
+	 Function: searchCache
+	 Private method
+
+	 Search a suggestion in cache
 	 */
 	searchCache : function(search) {
 
@@ -432,9 +331,10 @@ var GooCompleter = new Class({
 		return found;
 	},
 	/*
-	 * Function: navigate Private method
-	 *
-	 * Navigate between listbox
+	 Function: navigate
+	 Private method
+
+	 Navigate between listbox
 	 */
 	navigate : function(key) {
 
@@ -445,13 +345,12 @@ var GooCompleter = new Class({
 
 			if(!selected && el.hasClass('selected')) {
 
-				el.removeClass('selected');
+				el.removeClass('selected')
 
 				if(key == 'up') {
 					if(el.getPrevious() == null)
 						selected = nodes[nodes.length - 1];
-					// getLast() doesn't
-					// work!
+					// getLast() doesn't work!
 					else
 						selected = el.getPrevious();
 				}
@@ -481,10 +380,7 @@ var GooCompleter = new Class({
 			// Move scroll to selected element
 			this.listbox.scrollTo(0, selected.getPosition().y - this.listbox.getPosition().y);
 
-			// AD
-			// comment
-			// console.log(selected.getPosition(this.listbox).y);
-			// end AD
+			console.log(selected.getPosition(this.listbox).y);
 
 		}
 
@@ -492,26 +388,13 @@ var GooCompleter = new Class({
 
 	},
 	/*
-	 * Function: removeSelection Private method
-	 *
-	 * Removes all optical stylings of the suggestions
-	 */
-	removeSelection : function() {
-		var nodes = this.listbox.getChildren('ul li');
+	 Function: setPosition
+	 Private method
 
-		nodes.each(function(el) {
-			if(el.hasClass('selected')) {
-				el.removeClass('selected');
-			}
-
-		});
-	},
-	/*
-	 * Function: setPosition Private method
-	 *
-	 * Set a relative position of a element in absolute values
+	 Set a relative position of a element in absolute values
 	 */
 	setRelPosition : function(field, container, x_offset, y_offset, overlap) {
+
 		var field_position = field.getCoordinates();
 		var top = field_position.top + y_offset;
 		top += !overlap ? field_position.height : 0;

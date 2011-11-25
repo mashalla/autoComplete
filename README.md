@@ -3,6 +3,8 @@ Accessible Autocompleter
 
 Based on GooCompleter but enhanced accessitility features.
 
+![Screenshot](http://www.accessiblemootoolsdemo.iao.fraunhofer.de/Mootools_Widgets/WidgetThumbs/Autocomplete.png)
+
 Features
 --------
 
