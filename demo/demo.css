@@ -62,7 +62,7 @@ h3 {
 div.sa_demo_contentScreen {
 	background-color: #ffffff;
 	margin: 0 5px 1em 0;
-	padding: 0px 8px 8px 8px;
+	padding: 20px 8px 8px 80px;
 	margin: 10px 40px 40px 5px;
 	width: 580px;
 }
@@ -79,72 +79,58 @@ div.sa_demo_headerScreen {
 /* Goocompleter default style */
 
 .goocompleter_field {
-    border: 1px solid #aaaaaa;
-    background-image: url(img/verlauf.png);
-    background-position: center;
-    width: 200px;
-    padding-left: 3px;
-    position: relative;
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px;
+	border: 1px solid #aaaaaa;
+	background-image: url(img/verlauf.png);
+	background-position: center;
+	width: 200px;
+	padding-left: 3px;
+	position: relative;
+	-moz-border-radius: 3px 3px 3px 3px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;
 }
-
 .goocompleter_field:focus {
-    outline: 2px dotted #cc0000;
+	outline: 2px dotted #cc0000;
 }
-
 /* Listbox */
 .goocompleter_listbox {
 	position: absolute;
 	display: none;
 	overflow: hidden;
-	
 	width: 150px;
 	max-height: 300px;
-	
-	
-	border: 1px solid #aaaaaa;	
-	
-    -moz-border-radius: 3px 3px 3px 3px;
-    -webkit-border-radius: 3px 3px 3px 3px;
-    border-radius: 3px 3px 3px 3px;
+	border: 1px solid #aaaaaa;
+	-moz-border-radius: 3px 3px 3px 3px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;
 }
-
 .goocompleter_listbox ul {
 	margin: 0;
 	padding: 0;
 }
-
 .goocompleter_listbox li {
 	cursor: default;
-	list-style-type: none;	
-	
+	list-style-type: none;
 	padding: 2px;
 }
-
 .goocompleter_listbox li.odd {
 	background-color: #F3F3F3;
 }
-
 .goocompleter_listbox li.even {
-	background-color: #FFFFFF;	
+	background-color: #FFFFFF;
 }
-
 .goocompleter_listbox li:hover, .goocompleter_listbox li.odd:hover, .goocompleter_listbox li.selected {
 	background-color: #FFCCCC;
 	color: #000000;
 }
-
 /* Typebox */
 .goocompleter_typebox {
 	position: absolute;
 	z-index: 9;
 	overflow: hidden;
 	color: transparent;
-	white-space: nowrap	
+	white-space: nowrap
 }
-
 .goocompleter_typebox .goocompleter_suggestion {
 	color: #999999;
 	display: inline;

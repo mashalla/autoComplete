@@ -79,8 +79,16 @@ var GooCompleter = new Class({
 
 		// AD
 		// WAI ARIA roles and properties
-		this.field.setAttribute('role', 'input');
-		this.field.setAttribute('aria-autocomplete', 'true');
+		this.field.setAttribute('role', 'textbox');
+		this.field.setAttribute('aria-autocomplete', 'both');
+		this.liveregion = new Element('span', {
+			'span' : 'status',
+			'aria-live' : 'assertive',
+			styles : {
+				position: 'absolute',
+				clip: 'rect(1px, 1px, 1px, 1px)'
+			}
+		}).inject(this.field,'after');
 		// end AD
 
 		// Setup Typebox
@@ -112,12 +120,14 @@ var GooCompleter = new Class({
 				this.field.addEvent('focus', function() {
 					this.setRelPosition(this.field, this.typebox, this.options.typebox_offset.x, this.options.typebox_offset.y, true);
 				}.bind(this));
+				var self = this;
 				this.field.addEvent('blur', function() {
-					if(this.options.use_typebox)
-						this.typebox.empty();
-
-					this.listbox.setStyle('display', 'none');
-
+					setTimeout( function() {
+						if(this.options.use_typebox)
+							this.typebox.empty();
+						if(this.listbox)
+							this.listbox.setStyle('display', 'none');
+					}.bind(this), 200);
 				}.bind(this));
 			}
 
@@ -186,9 +196,9 @@ var GooCompleter = new Class({
 
 						if(this.options.use_typebox)
 							this.typebox.empty();
-
-						this.field.set('value', selected.get('html'));
+						this.field.value = selected.get('html');
 					}
+
 					// AD
 					else {
 						// show all suggestions or the filtered ones
@@ -245,6 +255,10 @@ var GooCompleter = new Class({
 							this.hideSuggestions();
 							this.writeTypebox(null);
 						}
+						if(this.options.use_typebox)
+							this.typebox.empty();
+						if(this.listbox)
+							this.listbox.setStyle('display', 'none');
 					}
 				}
 				// end AD
@@ -354,9 +368,8 @@ var GooCompleter = new Class({
 	 * Show a list of suggestions
 	 */
 	showSuggestions : function(suggestions) {
-
 		if(suggestions.length > 0) {
-
+			this.liveregion.set('html', suggestions.length + 'autocomplete options');
 			var style = 'even';
 
 			// Delete result list
