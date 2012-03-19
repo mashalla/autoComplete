@@ -81,6 +81,7 @@ var GooCompleter = new Class({
 		// WAI ARIA roles and properties
 		this.field.setAttribute('role', 'textbox');
 		this.field.setAttribute('aria-autocomplete', 'both');
+        this.field.setAttribute('aria-live', 'polite');
 		this.liveregion = new Element('span', {
 			'span' : 'status',
 			'aria-live' : 'assertive',
@@ -390,7 +391,8 @@ var GooCompleter = new Class({
 				if(this.options.use_listbox) {
 					new Element('li', {
 						html : value,
-						'class' : style
+						'class' : style,
+                        'role' : 'option'
 					}).inject(this.listbox.getElement('ul'));
 					style = style == 'even' ? 'odd' : 'even';
 				}
